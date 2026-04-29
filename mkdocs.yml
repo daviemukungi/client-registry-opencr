@@ -1,0 +1,104 @@
+# Project information
+site_name: "OpenCR Documentation"
+site_description: "Technical documentation for the Open Client Registry"
+site_author: "IntraHealth"
+site_url: "https://github.com/intrahealth/client-registry"
+
+# Repository
+repo_name: "intrahealth/client-registry"
+repo_url: "https://github.com/intrahealth/client-registry"
+
+# Copyright
+copyright: "Copyright &copy; 2020 IntraHealth International"
+
+# Theme
+theme:
+  name: "material"
+  palette:
+    primary: "blue grey"
+    accent: "indigo"
+  language: "en"
+  font:
+    text: "Roboto"
+    code: "Roboto Mono"
+  features:
+    # - navigation.expand
+    - navigation.tabs
+
+nav:
+  - Home:
+    - 'index.md'
+  - User:
+    - 'user/introduction.md'
+    - 'user/process.md'
+    - 'user/recordlinkage.md'
+    - 'user/usecases.md'
+    - 'user/ui.md'
+    - 'user/ui-advanced.md'
+    - 'user/openmrs.md'
+    - 'user/cruid.md'
+    - 'user/algos.md'
+    - 'user/supported.md'
+  - Implementer:
+    # - 'user/process.md'
+    - 'user/guide.md'
+    - 'impl/roles.md'
+    - 'user/resources.md'
+  - Developer:
+    - 'dev/addalgos.md'
+    - 'dev/docs.md'
+    - 'dev/license.md'
+    - 'dev/contributing.md'
+    - 'dev/roadmap.md'
+
+  - Sysadmin:
+    - 'Introduction': 
+      - 'admin/architecture.md'
+      - 'admin/proficiencies.md'
+      - 'admin/internals.md'
+    - 'Getting Started (Docker)':
+      - 'admin/docker.md'
+      - 'admin/queries.md'
+      - 'notebooks/basic_query_in_python.ipynb'
+      - 'admin/decision_rules.md'
+    - 'Installation':
+      - 'admin/requirements.md'
+      - 'admin/method.md'
+      - 'admin/configuration.md'
+      - 'admin/installation.md'
+      - 'admin/installation_full.md'
+      - 'admin/ansible.md'
+    - 'Load Bulk Data':
+      - 'admin/loadjs.md'
+      - 'notebooks/load_bulk_data_in_python.ipynb'
+    - 'Production Considerations':
+      - 'admin/security.md'
+      - 'admin/backup.md'
+      - 'admin/troubleshooting.md'
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      toc_depth : "3"
+  - footnotes
+  
+# https://github.com/zhaoterryy/mkdocs-pdf-export-plugin not working
+plugins:
+  - search
+  - git-revision-date-localized
+  - mknotebooks
+  # - pdf-export:
+  #     combined: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/intrahealth/client-registry
+
+
+# theme:
+# logo: 'images/logo.png' must be 128x128
+# logo:
+#   icon: 'menu_book'

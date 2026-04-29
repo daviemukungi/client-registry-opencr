@@ -1,0 +1,26 @@
+name: loginpage
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  loginpage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker-compose up -d
+        run: docker-compose -f docker-compose.cicd.yml up -d
+      - name: sleep
+        run: sleep 240
+      - name: wget
+        run: wget --no-check-certificate  https://localhost:3000/crux/
+      - name: down
+        run: docker-compose -f docker-compose.cicd.yml down
