@@ -1,10 +1,10 @@
    
    {
     "resourceType": "Patient",
-    "identifier": [{"system": "http://clientregistry.org/openmrs", "value": "KH100003"}, {"system": "http://system1.org", "value": "SYS10003", "period": {"start": "2012-01-10"}, "assigner": {"display": "Battambang Provincial Hospital"}}],
+    "identifier": [{"system": "http://clientregistry.org/openmrs", "value": "KH1000044"}, {"system": "http://system1.org", "value": "SYS10003", "period": {"start": "2012-01-10"}, "assigner": {"display": "Battambang Provincial Hospital"}}],
     "active": true,
-    "name": [{"use": "official", "family": "Kannitha", "given": ["Kosall", "Raatha"]}],
+    "name": [{"use": "official", "family": "Picch", "given": ["Kosall", "Raatha"]}],
     "telecom": [{"system": "phone", "value": "0981234503"}],
     "gender": "male",
-    "birthDate": "1978-11-05"
+    "birthDate": "1978-11-07"
   }
