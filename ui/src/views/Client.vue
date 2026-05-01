@@ -85,6 +85,15 @@
                         </v-list-item-content>
                       </v-list-item>
                       <v-list-item
+                        v-for="(addr, m) in patient.address"
+                        :key="`addr-${m}`"
+                      >
+                        <v-list-item-content>{{ $t('village') }}:</v-list-item-content>
+                        <v-list-item-content class="align-end">
+                          {{ addr }}
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-list-item
                         v-for="(id, l) in patient.identifier"
                         :key="`${l}-${id.system}`"
                       >
@@ -561,6 +570,14 @@ export default {
                       }
                     }
                   }
+                  let address = [];
+                  if (patient.address) {
+                    for (let addr of patient.address) {
+                      if (addr.text) {
+                        address.push(addr.text);
+                      }
+                    }
+                  }
                   try {
                     name = patient.name.find(name => name.use === "official");
                     if(!name) {
@@ -590,6 +607,7 @@ export default {
                       birthdate: patient.birthDate,
                       name: patient.name,
                       telecom: patient.telecom,
+                      address,
                       identifier: identifiers,
                       family: name.family,
                       given: name.given.join(" "),
@@ -604,6 +622,7 @@ export default {
                       birthdate: patient.birthDate,
                       name: patient.name,
                       telecom: patient.telecom,
+                      address,
                       identifier: identifiers,
                       family: name.family,
                       given: name.given.join(" "),
@@ -658,6 +677,14 @@ export default {
                       }
                     }
                   }
+                  let address = [];
+                  if (patient.address) {
+                    for (let addr of patient.address) {
+                      if (addr.text) {
+                        address.push(addr.text);
+                      }
+                    }
+                  }
                   let extensions = [];
                   if (patient.extension) {
                     for (let id of patient.extension) {
@@ -697,6 +724,7 @@ export default {
                       birthdate: patient.birthDate,
                       name: patient.name,
                       telecom: patient.telecom,
+                      address,
                       identifier: identifiers,
                       extension: extensions,                      
                       family: name.family,
@@ -713,6 +741,7 @@ export default {
                       birthdate: patient.birthDate,
                       name: patient.name,
                       telecom: patient.telecom,
+                      address,
                       identifier: identifiers,
                       extension: extensions,                      
                       family: name.family,

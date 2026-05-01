@@ -46,6 +46,7 @@
     "given_names": "Given names",
     "gender":"Gender",
     "birth_date":"Date of Birth",
+    "village":"Village",
     "middle_names":"Middle names",
     "source": "Source",
     "source_id": "Source ID",
