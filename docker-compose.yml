@@ -2,6 +2,22 @@ version: '3'
 
 services:
 
+  opencr:
+    build:
+      context: .
+      dockerfile: docker/opencr/Dockerfile
+    image: intrahealth/opencr:local
+    container_name: opencr
+    ports:
+      - "3000:3000"
+    depends_on:
+      - fhir
+      - es
+    networks:
+      - opencr
+    environment:
+      - NODE_ENV=docker
+
   fhir:
     container_name: hapi-fhir
     image: hapiproject/hapi:v4.1.0
