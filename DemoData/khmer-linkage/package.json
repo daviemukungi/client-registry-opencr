@@ -1,0 +1,19 @@
+{
+  "name": "khmer-linkage",
+  "version": "1.0.0",
+  "description": "Probabilistic record linkage pipeline for Khmer-language patient names",
+  "type": "module",
+  "main": "pipeline.js",
+  "scripts": {
+    "start": "node pipeline.js",
+    "link:variations": "node pipeline.js --left=../cambodia_patients_variations_khmer.json --right=../cambodia_patients_variations_khmer.json --pairs",
+    "link:cambodia": "node pipeline.js --left=../cambodia_patients.json --right=../cambodia_patients_variations.json",
+    "link:mch": "node pipeline.js --left=../MCH_Patient_FHIR_Resources_anonymized.json --blockSize=500 --sample=200"
+  },
+  "dependencies": {
+    "damerau-levenshtein": "^1.0.5",
+    "fast-levenshtein": "^2.0.6",
+    "jaro-winkler": "^0.2.8",
+    "khmer-normalizer": "^1.0.0"
+  }
+}
