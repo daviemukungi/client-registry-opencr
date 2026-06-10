@@ -32,3 +32,9 @@ ansible.p12
 
 # venv
 venv/
+scripts/.venv
+demo-data/
+
+# python
+__pycache__/
+*.pyc

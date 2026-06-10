@@ -8,5 +8,8 @@
   "source": "openmrs",
   "source_id": "patient3",
   "reason": "Potential Matches",
-  "reasonCode": "potentialMatches"
+  "reasonCode": "potentialMatches",
+  "score": 2,
+  "threshold": 1,
+  "matchType": "potential"
 }]

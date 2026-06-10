@@ -4,6 +4,9 @@ version: '3'
 services:
 
   opencr:
+    build:
+      context: .
+      dockerfile: docker/opencr/Dockerfile
     container_name: opencr
     image: intrahealth/opencr
     ports:
