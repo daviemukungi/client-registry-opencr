@@ -257,7 +257,28 @@ describe( "Testing express", () => {
   test( "Testing Getting Match Issues", () => {
     const allMatchIssues = require("./FHIRResources/allMatchIssues.json");
     const allMatchIssuesRes = require("./otherResources/allMatchIssues.json");
+    const decisionRules = config.get("rules");
     request.__setFhirResults( `${FHIR_BASE_URL}/Patient?_tag=http://openclientregistry.org/fhir/matchIssues|potentialMatches,http://openclientregistry.org/fhir/matchIssues|conflictMatches`, null, JSON.stringify(allMatchIssues) );
+    request.__setFhirResults(
+      `${FHIR_BASE_URL}/Patient/433ebeb6-1d89-4b64-97e6-a985675ca571`,
+      null,
+      JSON.stringify(require("./FHIRResources/patient3.json"))
+    );
+    request.__setFhirResults(
+      `${FHIR_BASE_URL}/Patient?_id=bc58707b-62f1-498a-8fb3-568cd5b69db2,d55e15fd-d7a6-42b8-89cc-560e3578ef7f`,
+      null,
+      JSON.stringify({
+        entry: [
+          require("./FHIRResources/patient1andlinkAfterBrokenMatchWithoutRematch.json").entry[0],
+          require("./FHIRResources/patient2andlinkAfterBrokenMatchWithoutRematch.json").entry[0],
+        ],
+      })
+    );
+    axios.__setFhirResults(
+      `${ES_BASE_URL}/_search?scroll=1m&size=1000`,
+      buildQuery(require("./FHIRResources/patient3.json"), decisionRules[0]),
+      require("./ESResources/searchresultsforpatient3.json")
+    );
     return supertest(app)
       .get("/get-match-issues").send().then( (response) => {
         expect(response.statusCode).toBe(200);

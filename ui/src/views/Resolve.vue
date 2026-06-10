@@ -96,6 +96,21 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-row v-if="thresholds.autoMatchThreshold !== undefined || thresholds.potentialMatchThreshold !== undefined">
+      <v-col cols="12">
+        <v-alert type="info" dense outlined>
+          <span v-if="thresholds.potentialMatchThreshold !== undefined">
+            {{ $t('potential_match_threshold') }}:
+            <v-chip color="amber" dark small class="mx-1">{{ thresholds.potentialMatchThreshold }}</v-chip>
+          </span>
+          <span v-if="thresholds.autoMatchThreshold !== undefined" class="ml-4">
+            {{ $t('auto_match_threshold') }}:
+            <v-chip color="green" dark small class="mx-1">{{ thresholds.autoMatchThreshold }}</v-chip>
+          </span>
+          <span class="ml-4 text-caption">{{ $t('scores_legend') }}</span>
+        </v-alert>
+      </v-col>
+    </v-row>
     <v-row v-for="(list, uid) in crids" :key="uid">
       <v-col cols="12">
         <v-card>
@@ -138,8 +153,16 @@
             <template v-slot:item.view="{ item }">
               <v-switch v-model="showCard[item.source_id]" hide-details @change="if ( showCard[item.source_id] ) $vuetify.goTo($refs.fullCards)"></v-switch>
             </template>
-            <template v-slot:item.score="{ item }">
-              <v-switch v-model="showScore[item.source_id]" hide-details></v-switch>
+            <template v-slot:item.topScore="{ item }">
+              <v-chip
+                v-if="getTopScoreDetail(item)"
+                :color="matchTypeColor(getTopScoreDetail(item).matchType)"
+                dark
+                small
+              >
+                {{ formatScoreDetail(getTopScoreDetail(item)) }}
+              </v-chip>
+              <span v-else>—</span>
             </template>
             <template v-slot:item.birthDate="{ item }">
               {{ item.birthDate | moment("MMMM DD YYYY") }}
@@ -170,6 +193,18 @@
             :disable-pagination="true"
             :hide-default-footer="true"
             >
+            <template v-for="header in dynamicScoreHeaders" v-slot:[`item.${header.value}`]="{ item }">
+              <v-chip
+                v-if="getMatrixScoreDetail(item, header.value)"
+                :key="header.value"
+                :color="matchTypeColor(getMatrixScoreDetail(item, header.value).matchType)"
+                dark
+                small
+              >
+                {{ formatScoreDetail(getMatrixScoreDetail(item, header.value)) }}
+              </v-chip>
+              <span v-else :key="header.value + '-empty'">—</span>
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
@@ -216,9 +251,19 @@
                 v-for="(score,source_id) in filteredScores(data.scores)"
                 :key="data.source_id+'-'+source_id"
                 >
-                <v-list-item-content>{{getSource(source_id)}}</v-list-item-content>
-                <v-list-item-content>{{source_id}}:</v-list-item-content>
-                <v-list-item-content>{{score}}</v-list-item-content>
+                <v-list-item-content>{{getSource(source_id)}} {{source_id}}</v-list-item-content>
+                <v-list-item-content class="align-end">
+                  <v-chip
+                    v-if="getScoreDetail(data, source_id)"
+                    :color="matchTypeColor(getScoreDetail(data, source_id).matchType)"
+                    dark
+                    small
+                  >
+                    {{ formatScoreDetail(getScoreDetail(data, source_id)) }}
+                    ({{ $t('match_type_' + getScoreDetail(data, source_id).matchType) }})
+                  </v-chip>
+                  <span v-else>{{ score }}</span>
+                </v-list-item-content>
               </v-list-item>
 
             </v-list>
@@ -257,8 +302,8 @@ export default {
       crids: {},
       crid_list: [],
       showCard: {},
-      showScore: {},
       showMatrix: false,
+      thresholds: {},
       showReview: false,
       cohortPopup: false,
       resolves: [],
@@ -273,7 +318,7 @@ export default {
         { text: this.$t('birth_date'), value: "birthDate" },
         { text: this.$t('gender'), value: "gender" },
         { text: this.$t('full_view'), value: "view", sortable: false },
-        { text: "Scores", value: "score", sortable: false },
+        { text: this.$t('match_score'), value: "topScore", sortable: false },
       ],
       dates: { birthDate: true },
       fields: { source: this.$t('submitting_system'), source_id: this.$t('source_id'), family: this.$t('surname'), given: this.$t('given_names'),
@@ -298,22 +343,6 @@ export default {
         ],
       nickname: {}
     };
-  },
-  watch: {
-    showScore: {
-      handler(val) {
-        for( let source_id of Object.keys(val) ) {
-          if ( val[source_id] ) {
-            if ( !this.headers.find( header => header.value === source_id ) ) {
-              this.headers.push( { text: this.getSource(source_id)+" "+source_id, value: source_id } )
-            }
-          } else {
-            this.headers = this.headers.filter( header => header.value !== source_id )
-          }
-        }
-      },
-      deep: true
-    }
   },
   created: function() {
     this.$store.state.progress.enable = true;
@@ -357,6 +386,9 @@ export default {
 
 
       this.resolves = responseData
+      if (responseData.length > 0 && responseData[0].thresholds) {
+        this.thresholds = responseData[0].thresholds
+      }
 
       shuffle(this.available_nicknames)
       this.organizeResolves(true)
@@ -393,9 +425,70 @@ export default {
         }
       }
       return false;
+    },
+    dynamicScoreHeaders() {
+      return this.score_headers.filter((header) => header.value !== 'name')
     }
   },
   methods: {
+    getScoreDetail(data, sourceId) {
+      if (data.scoreDetails && data.scoreDetails[sourceId]) {
+        return data.scoreDetails[sourceId]
+      }
+      if (data.scores && data.scores[sourceId] !== undefined) {
+        return { score: data.scores[sourceId], matchType: null, threshold: null }
+      }
+      return null
+    },
+    getMatrixScoreDetail(row, columnValue) {
+      const parts = row.name ? row.name.split(' ') : []
+      const sourceId = parts.length ? parts[parts.length - 1] : null
+      if (!sourceId || sourceId === columnValue) {
+        return null
+      }
+      const resolve = this.resolves.find((r) => r.source_id === sourceId)
+      if (!resolve) {
+        return null
+      }
+      return this.getScoreDetail(resolve, columnValue)
+    },
+    getTopScoreDetail(item) {
+      const peerIds = (this.crids[item.uid] || [])
+        .map((peer) => peer.source_id)
+        .filter((id) => id !== item.source_id)
+      let topDetail = null
+      for (const peerId of peerIds) {
+        const detail = this.getScoreDetail(item, peerId)
+        if (!detail || detail.score === undefined) {
+          continue
+        }
+        if (!topDetail || detail.score > topDetail.score) {
+          topDetail = detail
+        }
+      }
+      return topDetail
+    },
+    formatScoreDetail(detail) {
+      if (!detail || detail.score === undefined) {
+        return '—'
+      }
+      if (detail.threshold !== undefined && detail.threshold !== null) {
+        return `${detail.score} / ${detail.threshold}`
+      }
+      return `${detail.score}`
+    },
+    matchTypeColor(matchType) {
+      if (matchType === 'auto') {
+        return 'green'
+      }
+      if (matchType === 'potential') {
+        return 'amber'
+      }
+      if (matchType === 'conflict') {
+        return 'red'
+      }
+      return 'grey'
+    },
     organizeResolves: function( firstTime ) {
       this.loading = true
       for( let idx of Object.keys(this.crids) ) {

@@ -9,6 +9,7 @@ const matchMixin = require('../mixins/matchMixin');
 const fhirWrapper = require('../fhir')();
 const medMatching = require('../medMatching')();
 const esMatching = require('../esMatching');
+const { populateScores, getTopScoreSummary } = require('../matchScoreUtils');
 const logger = require('../winston');
 const config = require('../config');
 const matchIssuesURI = URI(config.get("systems:CRBaseURI")).segment('matchIssues').toString();
@@ -1260,37 +1261,6 @@ router.post('/matches', (req, res) => {
       });
     });
   }
-  function populateScores(patient, ESMatches, FHIRPotentialMatches, FHIRAutoMatched, FHIRConflictsMatches) {
-    for(let esmatch of ESMatches) {
-      for(let autoMatch of esmatch.autoMatchResults) {
-        let patResource = FHIRAutoMatched.entry.find((entry) => {
-          return entry.resource.id === autoMatch['_id'];
-        });
-        const validSystem = generalMixin.getClientIdentifier(patResource.resource);
-        patient.scores[validSystem.value] = autoMatch['_score'];
-      }
-      for(let potMatch of esmatch.potentialMatchResults) {
-        let patResource = FHIRPotentialMatches.entry.find((entry) => {
-          return entry.resource.id === potMatch['_id'];
-        });
-        if(!patResource) {
-          continue;
-        }
-        const validSystem = generalMixin.getClientIdentifier(patResource.resource);
-        patient.scores[validSystem.value] = potMatch['_score'];
-      }
-      for(let conflMatch of esmatch.conflictsMatchResults) {
-        let patResource = FHIRConflictsMatches.entry.find((entry) => {
-          return entry.resource.id === conflMatch['_id'];
-        });
-        if(!patResource) {
-          continue;
-        }
-        const validSystem = generalMixin.getClientIdentifier(patResource.resource);
-        patient.scores[validSystem.value] = conflMatch['_score'];
-      }
-    }
-  }
 });
 
 router.get('/potential-matches/:id', (req, res) => {
@@ -1453,38 +1423,42 @@ router.get('/potential-matches/:id', (req, res) => {
       });
     });
   }
-  function populateScores(patient, ESMatches, FHIRPotentialMatches, FHIRAutoMatched, FHIRConflictsMatches) {
-    for(let esmatch of ESMatches) {
-      for(let autoMatch of esmatch.autoMatchResults) {
-        let patResource = FHIRAutoMatched.entry.find((entry) => {
-          return entry.resource.id === autoMatch['_id'];
-        });
-        const validSystem = generalMixin.getClientIdentifier(patResource.resource);
-        patient.scores[validSystem.value] = autoMatch['_score'];
-      }
-      for(let potMatch of esmatch.potentialMatchResults) {
-        let patResource = FHIRPotentialMatches.entry.find((entry) => {
-          return entry.resource.id === potMatch['_id'];
-        });
-        if(!patResource) {
-          continue;
-        }
-        const validSystem = generalMixin.getClientIdentifier(patResource.resource);
-        patient.scores[validSystem.value] = potMatch['_score'];
-      }
-      for(let conflMatch of esmatch.conflictsMatchResults) {
-        let patResource = FHIRConflictsMatches.entry.find((entry) => {
-          return entry.resource.id === conflMatch['_id'];
-        });
-        if(!patResource) {
-          continue;
-        }
-        const validSystem = generalMixin.getClientIdentifier(patResource.resource);
-        patient.scores[validSystem.value] = conflMatch['_score'];
-      }
-    }
-  }
 });
+
+function getMatchingTool() {
+  if (config.get("matching:tool") === "mediator") {
+    return medMatching;
+  }
+  if (config.get("matching:tool") === "elasticsearch") {
+    return esMatching;
+  }
+  return null;
+}
+
+function enrichReviewsWithScores(reviews, callback) {
+  const matchingTool = getMatchingTool();
+  if (!matchingTool || reviews.length === 0) {
+    return callback(reviews);
+  }
+  async.eachLimit(reviews, 5, (review, nxtReview) => {
+    fhirWrapper.getResource({
+      resource: 'Patient',
+      id: review.id,
+      noCaching: true
+    }, (patient) => {
+      if (!patient || !patient.id) {
+        return nxtReview();
+      }
+      matchingTool.performMatch({
+        sourceResource: patient,
+        ignoreList: [patient.id],
+      }, ({ ESMatches }) => {
+        Object.assign(review, getTopScoreSummary(ESMatches, review.reasonCode));
+        return nxtReview();
+      });
+    });
+  }, () => callback(reviews));
+}
 
 router.get(`/get-match-issues`, (req, res) => {
   const clientIDURI = URI(config.get("systems:CRBaseURI")).segment('clientid').toString();
@@ -1532,7 +1506,9 @@ router.get(`/get-match-issues`, (req, res) => {
       };
       reviews.push(review);
     }
-    return res.status(200).json(reviews);
+    enrichReviewsWithScores(reviews, (enrichedReviews) => {
+      return res.status(200).json(enrichedReviews);
+    });
   });
 });
 
@@ -1583,7 +1559,9 @@ router.get(`/get-new-auto-matches`, (req, res) => {
       };
       reviews.push(review);
     }
-    return res.status(200).json(reviews);
+    enrichReviewsWithScores(reviews, (enrichedReviews) => {
+      return res.status(200).json(enrichedReviews);
+    });
   });
 });
 

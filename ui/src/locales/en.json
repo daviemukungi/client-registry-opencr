@@ -110,7 +110,13 @@
     "row_per_page": "Rows per page : ",
     "no_data": "No data available",
     "simplified_naming": "Use simplified naming?",
-     "include_real_crid": "Include Actual CR ID with Temporary CR ID?"
-    
-
+    "include_real_crid": "Include Actual CR ID with Temporary CR ID?",
+    "match_score": "Match score",
+    "match_threshold": "Threshold",
+    "auto_match_threshold": "Auto-match threshold",
+    "potential_match_threshold": "Potential match threshold",
+    "match_type_auto": "Auto-match",
+    "match_type_potential": "Potential match",
+    "match_type_conflict": "Conflict",
+    "scores_legend": "Green: auto-match, Amber: potential match, Red: conflict"
 }

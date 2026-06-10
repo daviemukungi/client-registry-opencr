@@ -8,7 +8,7 @@
     "uid": "eda0fdeb-1d52-4878-a84f-ccf581ef9fff",
     "ouid": "eda0fdeb-1d52-4878-a84f-ccf581ef9fff",
     "identifier_http://clientregistry.org/openmrs": "patient3",
-    "identifier_http://health.go.ug/cr/nationalid": "228374844",
+    "identifier_http://health.go.ug/cr/nationalId": "228374844",
     "identifier_http://system1.org": "12347",
     "phone": "0678 56160",
     "source_id": "patient3",
@@ -16,6 +16,22 @@
     "scores": {
       "patient1": 2,
       "patient2": 2
+    },
+    "scoreDetails": {
+      "patient1": {
+        "score": 2,
+        "matchType": "potential",
+        "threshold": 1
+      },
+      "patient2": {
+        "score": 2,
+        "matchType": "potential",
+        "threshold": 1
+      }
+    },
+    "thresholds": {
+      "autoMatchThreshold": 3,
+      "potentialMatchThreshold": 1
     }
   },
   {
@@ -27,7 +43,7 @@
     "uid": "739d4023-40eb-4f44-8d14-3355926bd60d",
     "ouid": "739d4023-40eb-4f44-8d14-3355926bd60d",
     "identifier_http://clientregistry.org/openmrs": "patient1",
-    "identifier_http://health.go.ug/cr/nationalid": "228374844",
+    "identifier_http://health.go.ug/cr/nationalId": "228374844",
     "identifier_http://system1.org": "12347",
     "phone": "0678 561608",
     "source_id": "patient1",
@@ -35,6 +51,22 @@
     "scores": {
       "patient2": 3,
       "patient3": 2
+    },
+    "scoreDetails": {
+      "patient2": {
+        "score": 3,
+        "matchType": "auto",
+        "threshold": 3
+      },
+      "patient3": {
+        "score": 2,
+        "matchType": "potential",
+        "threshold": 1
+      }
+    },
+    "thresholds": {
+      "autoMatchThreshold": 3,
+      "potentialMatchThreshold": 1
     }
   },
   {
@@ -46,7 +78,7 @@
     "uid": "42184bd9-1c0c-41ce-9188-f57341ca9e88",
     "ouid": "42184bd9-1c0c-41ce-9188-f57341ca9e88",
     "identifier_http://clientregistry.org/openmrs": "patient2",
-    "identifier_http://health.go.ug/cr/nationalid": "228374844",
+    "identifier_http://health.go.ug/cr/nationalId": "228374844",
     "identifier_http://system1.org": "12347",
     "phone": "0678 561608",
     "source_id": "patient2",
@@ -54,6 +86,22 @@
     "scores": {
       "patient1": 3,
       "patient3": 2
+    },
+    "scoreDetails": {
+      "patient1": {
+        "score": 3,
+        "matchType": "auto",
+        "threshold": 3
+      },
+      "patient3": {
+        "score": 2,
+        "matchType": "potential",
+        "threshold": 1
+      }
+    },
+    "thresholds": {
+      "autoMatchThreshold": 3,
+      "potentialMatchThreshold": 1
     }
   }
 ]
