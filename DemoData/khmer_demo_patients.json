@@ -1,0 +1,71 @@
+[
+  {
+    "resourceType": "Patient",
+    "identifier": [
+      {
+        "system": "http://clientregistry.org/openmrs",
+        "value": "KH-DEMO-001"
+      }
+    ],
+    "active": true,
+    "name": [
+      {
+        "use": "official",
+        "family": "ចាន់",
+        "given": ["ស្រីណាត"],
+        "text": "ចាន់ ស្រីណាត"
+      }
+    ],
+    "gender": "female",
+    "birthDate": "1992-03-20",
+    "telecom": [
+      { "system": "phone", "value": "012111001" }
+    ]
+  },
+  {
+    "resourceType": "Patient",
+    "identifier": [
+      {
+        "system": "http://clientregistry.org/openmrs",
+        "value": "KH-DEMO-002"
+      }
+    ],
+    "active": true,
+    "name": [
+      {
+        "use": "official",
+        "family": "ចាន់",
+        "given": ["ស្រីនាត"],
+        "text": "ចាន់ ស្រីនាត"
+      }
+    ],
+    "gender": "female",
+    "birthDate": "1993-07-15",
+    "telecom": [
+      { "system": "phone", "value": "012222002" }
+    ]
+  },
+  {
+    "resourceType": "Patient",
+    "identifier": [
+      {
+        "system": "http://clientregistry.org/openmrs",
+        "value": "KH-DEMO-003"
+      }
+    ],
+    "active": true,
+    "name": [
+      {
+        "use": "official",
+        "family": "ចាន់",
+        "given": ["ស្រីណា"],
+        "text": "ចាន់ ស្រីណា"
+      }
+    ],
+    "gender": "female",
+    "birthDate": "1992-09-10",
+    "telecom": [
+      { "system": "phone", "value": "012333003" }
+    ]
+  }
+]

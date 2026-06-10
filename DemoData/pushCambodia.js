@@ -1,7 +1,7 @@
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const patients = require('./cambodia_patients.json');
+const patients = require('./MCH_Patient_FHIR_Resources.json');
 
 const certsDir = path.join(__dirname, '../server/clientCertificates');
 const serverCert = path.join(__dirname, '../server/serverCertificates/server_cert.pem');
