@@ -15,7 +15,9 @@ Ensure OpenCR is running with TLS. Docker CICD setup uses port **3002** (`https:
 
 ## PMRS Cambodia CSV import
 
-Data file (gitignored): `demo-data/pmrs_female_data.csv`
+Data file (gitignored, local only): `demo-data/pmrs_female_data.csv`
+
+Do not commit or push files under `demo-data/` or other large PMRS CSV exports.
 
 **Record count is required** — pass it as the first argument or with `--count` / `-n`:
 

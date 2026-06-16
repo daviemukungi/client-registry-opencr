@@ -33,7 +33,11 @@ ansible.p12
 # venv
 venv/
 scripts/.venv
+
+# Large local import datasets (never commit)
 demo-data/
+data-*_pmrs_*.csv
+*_pmrs_*_data.csv
 
 # python
 __pycache__/
