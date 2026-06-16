@@ -91,7 +91,7 @@ def normalize_dob(dob: str) -> str:
 
 def normalize_phone(phone: str) -> str:
     value = normalize_khmer_string(phone)
-    if not value or value == "0000000000":
+    if not value or not value.replace("0", ""):
         return ""
     return value
 

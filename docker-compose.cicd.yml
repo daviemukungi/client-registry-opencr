@@ -10,7 +10,7 @@ services:
     image: intrahealth/opencr
     platform: linux/amd64
     ports:
-      - "3000:3000"
+      - "3002:3000"
     depends_on:
       - fhir
       - opensearch
