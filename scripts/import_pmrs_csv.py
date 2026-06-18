@@ -64,7 +64,7 @@ Examples:
     parser.add_argument("--concurrency", type=positive_int, default=2, help="max concurrent batch uploads")
     parser.add_argument("--retries", type=int, default=5, help="max retries per batch on connection error")
     parser.add_argument("--host", default="localhost", help="OpenCR host")
-    parser.add_argument("--port", type=int, default=3002, help="OpenCR port")
+    parser.add_argument("--port", type=int, default=8081, help="OpenCR port")
     parser.add_argument("--delay-ms", type=int, default=500, help="stagger delay between batch launches in ms")
     return parser
 

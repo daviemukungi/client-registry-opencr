@@ -123,6 +123,45 @@
               "valueString": "identifier.where(system='http://clientregistry.org/artnumber').value"
             }
           ]
+        },
+        {
+          "url": "http://ihris.org/fhir/StructureDefinition/iHRISReportElement",
+          "extension": [
+            {
+              "url": "label",
+              "valueString": "pmrsid"
+            },
+            {
+              "url": "name",
+              "valueString": "identifier.where(system='http://pmrs.gov.kh/patientid').value"
+            }
+          ]
+        },
+        {
+          "url": "http://ihris.org/fhir/StructureDefinition/iHRISReportElement",
+          "extension": [
+            {
+              "url": "label",
+              "valueString": "given_alias"
+            },
+            {
+              "url": "name",
+              "valueString": "name.where(use='old').given"
+            }
+          ]
+        },
+        {
+          "url": "http://ihris.org/fhir/StructureDefinition/iHRISReportElement",
+          "extension": [
+            {
+              "url": "label",
+              "valueString": "family_alias"
+            },
+            {
+              "url": "name",
+              "valueString": "name.where(use='old').family"
+            }
+          ]
         }
       ]
     }
