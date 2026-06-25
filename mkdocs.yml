@@ -58,6 +58,7 @@ nav:
       - 'admin/internals.md'
     - 'Getting Started (Docker)':
       - 'admin/docker.md'
+      - 'admin/docker-production.md'
       - 'admin/queries.md'
       - 'notebooks/basic_query_in_python.ipynb'
       - 'admin/decision_rules.md'
