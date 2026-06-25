@@ -210,7 +210,7 @@ const getESDocument = (query, callback) => {
         if(response.data.hits && response.data.hits.hits && Array.isArray(response.data.hits.hits)) {
           documents = documents.concat(response.data.hits.hits);
         }
-        if(response.data.hits.hits.length === 0 || response.data.hits.total.value == documents.length || !response.data._scroll_id) {
+        if(!response.data.hits || !response.data.hits.hits || response.data.hits.hits.length === 0 || response.data.hits.total.value == documents.length || !response.data._scroll_id) {
           scroll_id = null;
         } else {
           scroll_id = response.data._scroll_id;

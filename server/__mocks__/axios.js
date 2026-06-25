@@ -53,7 +53,12 @@ function post( url, data, config ) {
     if ( fhirErrors.hasOwnProperty( url + objHash ) ) {
       reject( { response: fhirErrors[ url + objHash ] } );
     } else {
-      let response = { ...fhirResults[ url + objHash ] };
+      let response = fhirResults[ url + objHash ] || {
+        _index: 'patients',
+        _shards: { total: 1, successful: 1, failed: 0 },
+        result: 'created',
+      };
+      response = { ...response };
       // overwrite the id like the server would on a create (or add it)
       response.id = "1";
       resolve( { data: response, status: 201 } );

@@ -391,7 +391,7 @@ const updateESDocument = (id, index, record, callback) => {
   };
   axios.post(url, record, { auth }).then(response => {
     logger.info(response.data);
-    if (response.data._shards.failed) {
+    if (response.data._shards && response.data._shards.failed) {
       logger.warn('Transaction failed, rerunning again');
       setTimeout(() => {
         updateESDocument(id, index, record, () => {

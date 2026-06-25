@@ -397,9 +397,13 @@ function saveResource(req, res) {
         if (error) {
           res.status(500).json(filteredResponseBundle);
         } else {
-          let response = filteredResponseBundle.find((bnd) => {
-            return bnd.response.location.startsWith(responseHeaders.patientID[0]);
-          })?.response;
+          let matchedBundle = filteredResponseBundle.find((bnd) => {
+            return bnd.response && bnd.response.location && bnd.response.location.startsWith(responseHeaders.patientID[0]);
+          });
+          let response = matchedBundle && matchedBundle.response;
+          if (!response) {
+            return res.status(500).json(filteredResponseBundle);
+          }
           let status = response.status.split(" ")[0];
           resource.id = responseHeaders.patientID[0];
           if(!resource.meta) {
