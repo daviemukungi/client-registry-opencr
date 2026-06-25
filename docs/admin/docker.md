@@ -3,6 +3,9 @@
 !!! note "Time to complete"
     10 Minutes
 
+!!! tip "Production deployments"
+    For single-server production with Docker Compose, see [Production Installation using Docker](docker-production.md).
+
 !!! warning
     This guide is for demonstrations or tests only, not for servers or production environments.
 
@@ -83,6 +86,22 @@ docker-compose -f docker-compose.cicd.yml up -d
 
 > The flag `-d` runs the processes in the background.
 
+Without the override file below, HAPI FHIR uses the embedded H2 database.
+
+#### PostgreSQL for HAPI FHIR (CI/CD override)
+
+To run HAPI FHIR against PostgreSQL instead of H2, merge the override file:
+
+```sh
+docker-compose -f docker-compose.cicd.yml -f docker-compose.cicd.override.yml up -d
+```
+
+CI workflows use this two-file compose setup. To tear down:
+
+```sh
+docker-compose -f docker-compose.cicd.yml -f docker-compose.cicd.override.yml down
+```
+
 - Visit the UI at: [https://localhost:3000/crux](https://localhost:3000/crux)
   - **Default username**: root@intrahealth.org
   - **Default password**: intrahealth
@@ -154,12 +173,12 @@ To see the logs of a component run the following command:
 docker logs -f <component>
 ```
 
-> Components are: `opencr`, `es`, and `fhir`
+> Components are: `opencr`, `opensearch`, `fhir`, and `postgres` (when using the PostgreSQL override)
 
 #### Spin down test instance
 
 To remove OpenCR and its dependencies, run the following:
 
 ```sh
-docker-compose -f docker-compose.cicd.yml down
+docker-compose -f docker-compose.cicd.yml -f docker-compose.cicd.override.yml down
 ```

@@ -17,7 +17,14 @@ Select an installation method based on your requirements.
 * *OS*: macOS, Windows, Linux. 
 * *Usage*: Software development, demos, training, evaluation, research.
 
-**Server installation**: 
+**Server installation (Docker)**: 
+
+* *Skills required*: Docker, command line, Linux server administration.
+* *OS*: Linux.
+* *Usage*: Production (single-server MVP).
+* *Guide*: [Production Installation using Docker](docker-production.md).
+
+**Server installation (Direct)**: 
 
 * *Skills required*: Command line and Linux expertise.
 * *OS*: Linux. 
