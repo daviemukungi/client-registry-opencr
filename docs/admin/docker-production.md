@@ -15,6 +15,8 @@ This guide deploys the full OpenCR platform with Docker Compose:
 
 The OpenCR and OpenSearch containers are pulled from Docker Hub ([`daviemukungi/opencr`](https://hub.docker.com/r/daviemukungi/opencr), [`daviemukungi/opensearch`](https://hub.docker.com/r/daviemukungi/opensearch)). HAPI FHIR and PostgreSQL use public images and are defined in [`docker-compose.prod.yml`](../../docker-compose.prod.yml) alongside OpenCR.
 
+For a summary of what was added and how images are tagged, see the [deployment changelog](deployment-changelog.md).
+
 ## Prerequisites
 
 - Linux server with Docker Engine and Docker Compose v2
