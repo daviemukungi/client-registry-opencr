@@ -23,8 +23,8 @@ Images use **date-sha** tags: `YYYYMMDD-<git-short-sha>`.
 
 | Image | Tag (initial publish) | Contents |
 |-------|----------------------|----------|
-| [`daviemukungi/opencr`](https://hub.docker.com/r/daviemukungi/opencr) | `20260625-4bea9e2` | OpenCR service (Node 18) |
-| [`daviemukungi/opensearch`](https://hub.docker.com/r/daviemukungi/opensearch) | `20260625-4bea9e2` | OpenSearch 2.1.0 + phonetic + record-linkage plugins |
+| [`daviemukungi/opencr`](https://hub.docker.com/r/daviemukungi/opencr) | `20260625-4bea9e2` | OpenCR service (Node 18); repushed 2026-06-25 with CI/runtime fixes (`sha256:09e2ca13…`) |
+| [`daviemukungi/opensearch`](https://hub.docker.com/r/daviemukungi/opensearch) | `20260625-4bea9e2` | OpenSearch 2.1.0 + phonetic + record-linkage plugins (`sha256:24471137…`) |
 
 Set tags in `.env`:
 
