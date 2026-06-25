@@ -46,8 +46,11 @@ Edit `server/config/config_production.json` before go-live:
 
 - `auth.secret` — generate a new random UUID
 - `fhirServer.password` — match `POSTGRES_PASSWORD` in `.env` if you change the database password
-- `clients` and `systems.internalid.uri` — match your submitting systems
+- `clients` and `systems.internalid.uri` — match your submitting systems (add your own identifier URIs; no patient records are shipped with this compose file)
 - `mediator` settings — if using OpenHIM in production
+
+!!! note "No patient data in this deployment"
+    The production Docker Compose stack and config template contain **no patient records**. Patient data must be imported separately after deployment using your organization's approved processes. Do not commit `config_production.json` or import CSV files to version control.
 
 !!! warning
     Do not deploy with default passwords or the template `auth.secret`. See [security](security.md).

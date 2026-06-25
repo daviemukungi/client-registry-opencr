@@ -38,7 +38,21 @@ scripts/.venv
 demo-data/
 data-*_pmrs_*.csv
 *_pmrs_*_data.csv
+data-*.csv
+*.totals.json
+
+# Local production config (customized per deployment; never commit)
+server/config/config_production.json
+.env
+
+# Local patient/demo datasets (never commit)
+DemoData/mch_patients.json
+DemoData/khmer_demo_patients.json
+DemoData/cambodia_patients_variations.json
+DemoData/cambodia_patients_variations_khmer.json
 
 # python
 __pycache__/
 *.pyc
+
+.claude

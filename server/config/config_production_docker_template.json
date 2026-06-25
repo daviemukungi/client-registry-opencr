@@ -21,9 +21,9 @@
     "patientReprocessing": "0 21 * * *"
   },
   "fhirServer": {
-    "baseURL": "http://fhir:8080/fhir",
     "username": "hapi",
-    "password": "hapi"
+    "password": "hapi",
+    "baseURL": "http://fhir:8080/fhir"
   },
   "elastic": {
     "server": "http://opensearch:9200",
@@ -51,35 +51,26 @@
       "displayName": "OpenMRS"
     },
     {
-      "id": "pmrs",
-      "displayName": "PMRS"
-    },
-    {
-      "id": "external",
-      "displayName": "External"
+      "id": "dhis2",
+      "displayName": "DHIS2"
     },
     {
       "id": "lims",
       "displayName": "Lab Info Management System"
     },
     {
-      "id": "mch-ipd",
-      "displayName": "MCH IPD"
+      "id": "cr",
+      "displayName": "Client Registry"
     }
   ],
   "systems": {
     "CRBaseURI": "http://openclientregistry.org/fhir",
     "internalid": {
       "uri": [
-        "http://health.go.ug/cr/internalid",
         "http://openmrs.org/openmrs2",
         "http://clientregistry.org/openmrs",
         "http://clientregistry.org/dhis2",
-        "http://clientregistry.org/lims",
-        "http://clientregistry.org/mch-ipd",
-        "http://clientregistry.org/mch-regno",
-        "http://pmrs.gov.kh/patientid",
-        "http://clientregistry.org/external-patientcode"
+        "http://clientregistry.org/lims"
       ],
       "displayName": "Internal ID"
     },
