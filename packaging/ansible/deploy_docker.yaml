@@ -1,0 +1,200 @@
+---
+- name: Deploy OpenCR docker-compose stack
+  hosts: all
+  remote_user: "{{ user }}"
+  tags: install
+
+  vars_prompt:
+    - name: "user"
+      prompt: "Please enter the username (without sudo)"
+      private: no
+
+    - name: "pgpass"
+      prompt: "Please provide the PostgreSQL password for the hapi user"
+      private: yes
+
+  tasks:
+
+  - name: Does client-registry source exist
+    stat:
+      path: /opt/client-registry/server
+    register: stat_result
+
+
+  - name: Try git clone from private repository
+    git:
+      repo: 'git@github.com:ddhmoh-tech/Client-Registry.git'
+      dest: /opt/client-registry
+      clone: yes
+      update: yes
+      accept_hostkey: yes
+    register: git_clone
+    ignore_errors: yes
+    when: not stat_result.stat.exists
+
+
+  - name: git clone succeeded
+    debug:
+      msg: "git clone succeeded from git@github.com:ddhmoh-tech/Client-Registry.git"
+    when:
+      - not stat_result.stat.exists
+      - git_clone is not failed
+
+
+  - name: git clone failed — will use local bundle as fallback
+    debug:
+      msg: "git clone failed — packaging code from this machine and uploading"
+    when:
+      - not stat_result.stat.exists
+      - git_clone is failed
+
+
+# Fallback: bundle the code on this machine and upload it when git clone fails.
+# Uses Python tarfile instead of macOS BSD tar to avoid Apple-specific metadata
+# (LIBARCHIVE.xattr.com.apple.*) that causes permission errors on Linux extraction.
+  - name: Write Python bundle script locally (fallback)
+    copy:
+      dest: /tmp/cr_bundle.py
+      content: |
+        import tarfile, os
+        src  = os.path.realpath("{{ playbook_dir }}/../..")
+        dest = "/tmp/client-registry-bundle.tar.gz"
+        skip = {".git", "node_modules", ".venv", "__pycache__", ".DS_Store"}
+        def clean(info):
+            parts = set(info.name.split("/"))
+            if parts & skip:
+                return None
+            info.mode  = 0o755 if info.isdir() else 0o644
+            info.uid   = 0
+            info.gid   = 0
+            info.uname = ""
+            info.gname = ""
+            return info
+        with tarfile.open(dest, "w:gz") as tar:
+            for item in sorted(os.listdir(src)):
+                if item not in skip:
+                    tar.add(os.path.join(src, item), arcname=item, filter=clean)
+        print("Archive created:", dest)
+    delegate_to: localhost
+    when:
+      - not stat_result.stat.exists
+      - git_clone is failed
+
+  - name: Create local source archive via Python (fallback)
+    command: python3 /tmp/cr_bundle.py
+    delegate_to: localhost
+    when:
+      - not stat_result.stat.exists
+      - git_clone is failed
+
+
+  - name: Upload and extract local source bundle (fallback)
+    unarchive:
+      src: /tmp/client-registry-bundle.tar.gz
+      dest: /opt/client-registry
+      extra_opts:
+        - --no-same-owner
+    when:
+      - not stat_result.stat.exists
+      - git_clone is failed
+
+
+# git pull only applies to git-managed directories (skipped for local bundle installs)
+  - name: Check if client-registry is a git repository
+    stat:
+      path: /opt/client-registry/.git
+    register: stat_git
+
+
+  - name: git pull
+    shell: cd /opt/client-registry && git pull
+    when: stat_git.stat.exists
+    ignore_errors: yes
+
+
+# .env drives image tags, ports, and Postgres credentials for docker-compose.prod.yml
+  - name: Does .env file exist
+    stat:
+      path: /opt/client-registry/.env
+    register: stat_env
+
+
+  - name: Copy .env.prod.example to .env
+    copy:
+      remote_src: yes
+      src: /opt/client-registry/.env.prod.example
+      dest: /opt/client-registry/.env
+      force: no
+    when: stat_env.stat.exists == False
+
+
+  - name: Set POSTGRES_PASSWORD in .env
+    lineinfile:
+      path: /opt/client-registry/.env
+      regexp: '^POSTGRES_PASSWORD='
+      line: "POSTGRES_PASSWORD={{ pgpass }}"
+
+
+# config_production.json is bind-mounted into the opencr container (see docker-compose.prod.yml)
+  - name: Copy config_production_docker_template.json to config_production.json
+    copy:
+      remote_src: yes
+      src: /opt/client-registry/server/config/config_production_docker_template.json
+      dest: /opt/client-registry/server/config/config_production.json
+      force: no
+
+
+# Pull all images declared in docker-compose.prod.yml before bringing the stack up
+  - name: docker compose pull
+    command: docker compose -f docker-compose.prod.yml pull
+    args:
+      chdir: /opt/client-registry
+
+
+  - name: docker compose up
+    command: docker compose -f docker-compose.prod.yml up -d
+    args:
+      chdir: /opt/client-registry
+
+
+# Allow time for HAPI FHIR and OpenSearch to finish their startup sequences
+  - pause:
+      seconds: 30
+
+
+# status
+  - name: docker compose ps
+    command: docker compose -f docker-compose.prod.yml ps
+    args:
+      chdir: /opt/client-registry
+    register: compose_ps
+
+
+  - debug:
+      msg: "{{ compose_ps.stdout_lines }}"
+
+
+# confirm opencr is responding
+  - name: Check OpenCR health endpoint
+    uri:
+      url: "https://localhost:3000/crux"
+      method: GET
+      validate_certs: no
+      status_code: 200
+    register: opencr_health
+    retries: 10
+    delay: 15
+    until: opencr_health.status == 200
+
+
+  - debug:
+      msg: "OpenCR is up: {{ opencr_health.status }}"
+
+
+  - name: Gather facts on listening ports
+    listen_ports_facts:
+
+
+  - name: List TCP ports
+    debug:
+      msg: "{{ ansible_facts.tcp_listen | map(attribute='port') | sort | list }}"

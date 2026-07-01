@@ -40,32 +40,16 @@
       authorized_key:
         user: opencr
         state: present
-        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
 
         
-    # passwordless sudo and wheel
-    - name: Make sure we have a 'wheel' group
-      group:
-        name: wheel
-        state: present
-
-      
-    - name: Allow 'wheel' group to have passwordless sudo
-      lineinfile:
-        dest: /etc/sudoers
-        state: present
-        regexp: '^%wheel'
-        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    # passwordless sudo via sudoers.d — works on Ubuntu and CentOS
+    - name: Grant opencr passwordless sudo
+      copy:
+        content: "opencr ALL=(ALL) NOPASSWD: ALL\n"
+        dest: /etc/sudoers.d/opencr
+        mode: 0440
         validate: 'visudo -cf %s'
-
-
-    - name: Add sudoers users to wheel group
-      user: 
-        name: opencr
-        groups: wheel 
-        append: yes
-        state: present
-        createhome: yes
 
 
     - name: Set backend server env var for app
